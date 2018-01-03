@@ -3,6 +3,10 @@
 
 ---
 
+<p align="center">
+<img src='example.png' width=700px>
+</p>
+
 ### Features
 
 Search the PDB for molecular information using site-side REST search
