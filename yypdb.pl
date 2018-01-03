@@ -11,6 +11,7 @@ our $pdb_url = "https://www.rcsb.org/pdb/rest/describePDB?structureId=";
 our $chem_url = "https://www.rcsb.org/pdb/rest/describeHet?chemicalID=";
 our $smiles_url = "https://www.rcsb.org/pdb/rest/smilesQuery?smiles=";
 our $ligand_url = "https://www.rcsb.org/pdb/rest/ligandInfo?structureId=";
+our $grab_url = "ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/pdb/pdb"; 
 our $rest_search ='http://www.rcsb.org/pdb/rest/search/';
 
 sub query_gen {
@@ -108,9 +109,10 @@ sub disp_xml {
 if (not @ARGV  or grep(/--help/,@ARGV))
 {
     print "\n => YYPDB \n";
-    print "\n Usage: yypdb [opts] [str]\n";
+    print "\n usage: yypdb [opts] [str]\n";
     print "\n\t--molid [PDBID]       get molecule info";
 	print "\n\t--header [PDBID]      get header info";
+	print "\n\t--grab [PDBID]        save pbd file to local directory";
     print "\n\t--idsearch [keyword]  search PDBIDs using keyword";
 	print "\n";
     exit;
@@ -137,6 +139,12 @@ if (grep(/\-\-header/, @ARGV))
 	my $xmlget = XML::LibXML->load_xml(string => $get);
 	disp_xml($xmlget);
 	print "\n";
+}
+if (grep(/\-\-grab/, @ARGV))
+{
+	print "\n>>> Saving PDB $keyword to local directory...\n";
+	my $url = join("","$grab_url","$keyword",".ent.gz");
+	my $get = `wget -q \"$url\"`;
 }
 if (grep(/\-\-idsearch/, @ARGV)) 
 {
