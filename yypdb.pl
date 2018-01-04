@@ -30,8 +30,7 @@ sub query_gen {
 }
 
 sub id_to_name {
-	my($IDs) = @_;
-	my @IDlist = split("\n",$IDs);
+	my(@IDlist) = @_;
 	foreach my $ID (@IDlist)
 	 {
 		print "$ID\t";
@@ -149,14 +148,23 @@ if (grep(/\-\-grab/, @ARGV))
 if (grep(/\-\-idsearch/, @ARGV)) 
 {
 	print "\nSearching PDBIDs for $keyword...";
-	print "\nThis may take a few seconds...\n\n";
 	my $query = query_gen(${keyword},"StructTitleQuery"); 
 	my $request = HTTP::Request->new( POST => ${rest_search});
 	$request->content_type( 'application/x-www-form-urlencoded' );
 	$request->content( $query );
 	my $response = $ua->request($request);
-	#print $response->content;
-	id_to_name($response->content);
+	my @entries = split("\n",$response->content);
+	if ( $#entries eq -1 )
+	{
+		print " 0 entries found.";
+	}
+	else 	
+	{
+		print " $#entries entries found.";
+		print "\nDisplaying all results. ^C to abort...";
+		print "\nThis may take a few seconds...\n\n";
+		id_to_name(@entries);
+	}
 	print "\n";
 }
 
