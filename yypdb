@@ -135,7 +135,6 @@ if (grep(/\-\-header/, @ARGV))
 	print "\n>>> Fetching PDB Info for ID $keyword...\n";
 	my $url = join("","$pdb_url","$keyword");
 	my $get = `wget -q -O - \"$url\"`;
-#	print $get;
 	my $xmlget = XML::LibXML->load_xml(string => $get);
 	disp_xml($xmlget);
 	print "\n";
@@ -161,7 +160,7 @@ if (grep(/\-\-idsearch/, @ARGV))
 	}
 	else 	
 	{
-		print " $#entries entries found.";
+		print " @{[$#entries + 1]} entries found.";
 		print "\nDisplaying all results. ^C to abort...";
 		print "\nThis may take a few seconds...\n\n";
 		id_to_name(@entries);
