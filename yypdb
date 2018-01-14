@@ -13,6 +13,7 @@ our $smiles_url = "https://www.rcsb.org/pdb/rest/smilesQuery?smiles=";
 our $ligand_url = "https://www.rcsb.org/pdb/rest/ligandInfo?structureId=";
 our $grab_url = "ftp://ftp.wwpdb.org/pub/pdb/data/structures/all/pdb/pdb"; 
 our $rest_search ='http://www.rcsb.org/pdb/rest/search/';
+our $das_url = "https://www.rcsb.org/pdb/rest/das/pdbchainfeatures/sequence?segment=";
 
 sub query_gen {
 	my($keyword,$type) = @_;
@@ -103,17 +104,25 @@ sub disp_xml {
 		print $PDB->getAttribute('citation_authors');
 		print "\nDEP DATE:   ";
 		print $PDB->getAttribute('deposition_date');
-	}	
+	}
+	
+	foreach my $seq ($xml->findnodes('//SEQUENCE'))
+	{
+		print "\nSEQUENCE ";
+		print $seq->getAttribute('id');
+		print $seq->string_value()
+	}
 }
 
 if (not @ARGV  or grep(/--help/,@ARGV))
 {
-    print "\n => YYPDB \n";
+    print "\n YYPDB \n";
     print "\n usage: yypdb [opts] [str]\n";
-    print "\n\t--molid [PDBID]       get molecule info";
-	print "\n\t--header [PDBID]      get header info";
-	print "\n\t--grab [PDBID]        save pbd file to local directory";
-    print "\n\t--idsearch [keyword]  search PDBIDs using keyword";
+    print "\n\t--molid [PDBID]         get molecule info";
+	print "\n\t--header [PDBID]        get header info";
+	print "\n\t--seq [PDBID A B C ...] get amino acid sequence for each chain";
+	print "\n\t--grab [PDBID]          save pbd file to local directory";
+    print "\n\t--idsearch [keyword]    search PDBIDs using keyword";
 	print "\n";
     exit;
 }
@@ -130,7 +139,7 @@ if (grep(/\-\-molid/, @ARGV))
 	disp_xml($xmlget);
 	print "\n";
 }
-if (grep(/\-\-header/, @ARGV))
+if (grep(/\-\-head/, @ARGV))
 {
 	print "\n>>> Fetching PDB Info for ID $keyword...\n";
 	my $url = join("","$pdb_url","$keyword");
@@ -138,6 +147,19 @@ if (grep(/\-\-header/, @ARGV))
 	my $xmlget = XML::LibXML->load_xml(string => $get);
 	disp_xml($xmlget);
 	print "\n";
+}
+if (grep(/\-\-seq/, @ARGV))
+{
+	my @seqarr = split(" ",$keyword);	
+	my $keyword = shift(@seqarr);
+	print "\n>>> Grabbing sequence for chain(s) @seqarr...\n";
+	foreach my $chain (@seqarr)
+	{
+		my $url = join("","$das_url","$keyword",".","$chain");
+		my $get = `wget -q -O - \"$url\"`;
+		my $xmlget = XML::LibXML->load_xml(string => $get);
+		disp_xml($xmlget);
+	}	
 }
 if (grep(/\-\-grab/, @ARGV))
 {
