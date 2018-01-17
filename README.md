@@ -4,7 +4,7 @@
 ---
 
 <p align="center">
-<img src='example.png' width=700px>
+<img src='logo.png' width=400px>
 </p>
 
 ### Features
@@ -27,7 +27,5 @@ navigating the PDB site by mouse (the slow way).
 ### ToDo
 
 * BLAST queries
-* Additional REST xml query types
-* Grab .ent and .pdb files
 * Linux dialog interface
 
