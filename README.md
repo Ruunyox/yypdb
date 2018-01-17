@@ -4,7 +4,7 @@
 ---
 
 <p align="center">
-<img src='logo.png' width=400px>
+<img src='logo.png' width=300px>
 </p>
 
 ### Features
