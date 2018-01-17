@@ -179,6 +179,8 @@ if (not @ARGV  or grep(/--help/,@ARGV))
     print "\n\t--molid [PDBID]         get molecule info";
 	print "\n\t--header [PDBID]        get header info";
 	print "\n\t--seq [PDBID A B C ...] get amino acid sequence for each chain";
+	print "\n\t--lig [PDBID]           get ligand info";
+	print "\n\t--go [PDBID]            get gene ontology info";
 	print "\n\t--grab [PDBID]          save pbd file to local directory";
     print "\n\t--idsearch [keyword]    search PDBIDs using keyword";
 	print "\n";
