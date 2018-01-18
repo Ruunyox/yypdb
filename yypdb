@@ -1,10 +1,10 @@
 #! /usr/bin/perl -w
 use strict;
 use autodie;
-#use warnings;
 no warnings 'uninitialized';	
 use LWP::Simple qw( $ua );
 use XML::LibXML;
+use Getopt::Long;
 
 our $mol_url = "https://www.rcsb.org/pdb/rest/describeMol?structureId=";
 our $pdb_url = "https://www.rcsb.org/pdb/rest/describePDB?structureId=";
@@ -159,47 +159,52 @@ sub disp_xml {
 			}
 		}
 	}
-#	if ($type eq "cluster")
-#	{
-#		foreach my $pdbChain ($xml->findnodes('//pdbChain'))
-#		{
-#			print "\nPDB ID:\t";
-#			print $pdbChain->getAttribute('name');
-#			print "\tRANK:\t";
-#			print $pdbChain->getAttribute('rank');
-#			print "\n";
-#		}
-#	}
 }
 
-if (not @ARGV  or grep(/--help/,@ARGV))
+my $help = '';
+my $molid= '';
+my $head = '';
+my $seq  = '';
+my $idsearch='';
+my $grab = '';
+my $lig  = '';
+my $go   = '';
+GetOptions ('help' => \$help,
+	    'molid' => \$molid,
+	    'head' => \$head,
+	    'seq=s' => \$seq,
+	    'grab' => \$grab,
+	    'lig' => \$lig,
+	    'go' => \$go,
+	    'idsearch=s' => \$idsearch);
+
+if ($help)
 {
     print "\n YYPDB \n";
     print "\n usage: yypdb [opts] [str]\n";
     print "\n\t--molid [PDBID]         get molecule info";
-	print "\n\t--header [PDBID]        get header info";
-	print "\n\t--seq [PDBID A B C ...] get amino acid sequence for each chain";
-	print "\n\t--lig [PDBID]           get ligand info";
-	print "\n\t--go [PDBID]            get gene ontology info";
-	print "\n\t--grab [PDBID]          save pbd file to local directory";
+    print "\n\t--header [PDBID]        get header info";
+    print "\n\t--seq [PDBID A B C ...] get amino acid sequence for each chain";
+    print "\n\t--lig [PDBID]           get ligand info";
+    print "\n\t--go [PDBID]            get gene ontology info";
+    print "\n\t--grab [PDBID]          save pbd file to local directory";
     print "\n\t--idsearch [keyword]    search PDBIDs using keyword";
-	print "\n";
+    print "\n";
     exit;
 }
 
 my $keyword = "$ARGV[$#ARGV]";
 my @opts=();
-if (grep(/\-\-molid/, @ARGV))
+if ($molid)
 {
 	print "\n>>> Fetching Molecule Info for ID $keyword...\n";
 	my $url = join("","$mol_url","$keyword");
 	my $get = `wget -q -O - \"$url\"`; 
-	#print $get;
 	my $xmlget = XML::LibXML->load_xml(string => $get);
 	disp_xml($xmlget,"molid");
 	print "\n";
 }
-if (grep(/\-\-head/, @ARGV))
+if ($head)
 {
 	print "\n>>> Fetching PDB Info for ID $keyword...\n";
 	my $url = join("","$pdb_url","$keyword");
@@ -208,9 +213,9 @@ if (grep(/\-\-head/, @ARGV))
 	disp_xml($xmlget,"head");
 	print "\n";
 }
-if (grep(/\-\-seq/, @ARGV))
+if ($seq ne '')
 {
-	my @seqarr = split(" ",$keyword);	
+	my @seqarr = split(" ",$seq);	
 	my $keyword = shift(@seqarr);
 	print "\n>>> Grabbing sequence for chain(s) @seqarr...\n\n";
 	foreach my $chain (@seqarr)
@@ -226,7 +231,7 @@ if (grep(/\-\-blast/, @ARGV))
 	my $seq = $keyword;
 	print "\n>>>BLASTing sequence $seq...";
 }
-if (grep(/\-\-lig/, @ARGV))
+if ($lig)
 {
 	print "\n>>> Fetching ligands...\n\n";
 	my $url = join("","$ligand_url","$keyword");
@@ -235,7 +240,7 @@ if (grep(/\-\-lig/, @ARGV))
 	disp_xml($xml_get,"lig");
 	print "\n"; 
 }
-if (grep(/\-\-go/, @ARGV))
+if ($go)
 {
 	print "\n>>> Fetching associated gene ontology terms...\n\n";
 	my $url = join("","$go_url","$keyword");
@@ -244,31 +249,16 @@ if (grep(/\-\-go/, @ARGV))
 	disp_xml($xml_get,"go");
 	print "\n"; 
 }
-#if (grep(/\-\-scl/, @ARGV))
-#{
-#	# Input as "PDBID\ CHAIN\ \RESNUM # 
-#	my @sclarr = split(" ",$keyword);
-#	my $keyword = shift(@sclarr);
-#	my $chain = shift(@sclarr);
-#	my $resnum= shift(@sclarr);
-#	print "\n>>> Fetching sequence cluster (Nr=$resnum) for $keyword.$chain...";
-#	my $url = join("","$scl_url","$resnum","&structureId=","$keyword",".","$chain");
-#	print "\n\n$url\n\n";
-#	my $get = `wget -q -O - \"$url"`;
-#	my $xml_get = XML::LibXML->load_xml(string => $get);
-#	disp_xml($xml_get,"cluster");
-#	print "\n";
-#}
-if (grep(/\-\-grab/, @ARGV))
+if ($grab)
 {
 	print "\n>>> Saving PDB $keyword to local directory...\n";
 	my $url = join("","$grab_url","$keyword",".ent.gz");
 	my $get = `wget -q \"$url\"`;
 }
-if (grep(/\-\-idsearch/, @ARGV)) 
+if ($idsearch ne '') 
 {
-	print "\nSearching PDBIDs for $keyword...";
-	my $query = query_gen(${keyword},"StructTitleQuery"); 
+	print "\nSearching PDBIDs for $idsearch...";
+	my $query = query_gen(${idsearch},"StructTitleQuery"); 
 	my $request = HTTP::Request->new( POST => ${rest_search});
 	$request->content_type( 'application/x-www-form-urlencoded' );
 	$request->content( $query );
