@@ -271,7 +271,7 @@ if (grep(/\-\-idsearch/, @ARGV))
 	my $query = query_gen(${keyword},"StructTitleQuery"); 
 	my $request = HTTP::Request->new( POST => ${rest_search});
 	$request->content_type( 'application/x-www-form-urlencoded' );
-	#$request->content( $query );
+	$request->content( $query );
 	my $response = $ua->request($request);
 	my @entries = split("\n",$response->content);
 	if ( $#entries eq -1 )
