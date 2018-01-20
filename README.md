@@ -23,7 +23,7 @@ usage: yypdb [flags] [str]
   --vb                         verbose mode
   --molid [PDBID]              get molecule info
   --header [PDBID]             get header info
-  --seq [PDBID A B C ...]      get amino acid sequence for each chain
+  --seq [PDBID.A.B.C ...]      get amino acid sequence for each chain
   --lig [PDBID]                get ligand info
   --go [PDBID]                 get gene associated ontology info
   --grab [PDBID]               save pbd file to local directory

@@ -357,27 +357,27 @@ my $motif = '';
 # CHEMICAL COMPONENT --- chemName
 my $name = ''; my $target = ''; my $polymerType = '';
 
-GetOptions ('help'   => \$help,
-	    'molid'      => \$molid,
-	    'head'       => \$head,
-	    'seq=s'      => \$seq,
-	    'grab'       => \$grab,
-	    'lig'        => \$lig,
-	    'go'         => \$go,
-		'blast=s'    => \$blast,
-		'min=s'		 => \$min,
-		'max=s'		 => \$max,
-		'search=s'   => \$search,
-		'protein=s' 	 => \$protein,
-		'DNA=s'		 => \$DNA,
-		'RNA=s' 		 => \$RNA,
+GetOptions ('help'     => \$help,
+	    'molid'        => \$molid,
+	    'head'         => \$head,
+	    'seq=s'        => \$seq,
+	    'grab'         => \$grab,
+	    'lig'          => \$lig,
+	    'go'           => \$go,
+		'blast=s'      => \$blast,
+		'min=s'		   => \$min,
+		'max=s'		   => \$max,
+		'search=s'     => \$search,
+		'protein=s'    => \$protein,
+		'DNA=s'		   => \$DNA,
+		'RNA=s' 	   => \$RNA,
 		'hybrid=s'     => \$hybrid,
-		'assembly=s'	 => \$assembly,
-		'motif=s'		 => \$motif,
-		'name=s'	     =>	\$name,
-		'target=s'	 => \$target,
+		'assembly=s'   => \$assembly,
+		'motif=s'	   => \$motif,
+		'name=s'       =>	\$name,
+		'target=s'	   => \$target,
 		'polymerType=s'=> \$polymerType,
-		'vb'		 => \$vb);	
+		'vb'		   => \$vb);	
 
 if ($help)
 {
@@ -387,7 +387,7 @@ if ($help)
 	print "\n  --vb                         verbose mode";
     print "\n  --molid [PDBID]              get molecule info";
     print "\n  --header [PDBID]             get header info";
-    print "\n  --seq [PDBID A B C ...]      get amino acid sequence for each chain";
+    print "\n  --seq [PDBID.A.B.C ...]      get amino acid sequence for each chain";
     print "\n  --lig [PDBID]                get ligand info";
     print "\n  --go [PDBID]                 get gene associated ontology info";
     print "\n  --grab [PDBID]               save pbd file to local directory";
@@ -539,7 +539,7 @@ if ($head)
 }
 if ($seq ne '')
 {
-	my @seqarr = split(" ",$seq);	
+	my @seqarr = split /\./, "$seq";	
 	my $keyword = shift(@seqarr);
 	if($vb)
 	{
