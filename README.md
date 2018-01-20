@@ -48,7 +48,6 @@ usage: yypdb [optional verbose] --search [search type] [params]
     --min [min] --max [max]    search PDBIDs by number of chains
 
   entNum --min [min] --max [max]    search PDBIDs by entity number
-  molWt  --min [min] --max [max]    search PDBIDs by molecular weight
   binding --min [min] --max[max]    search PDBIDS by ki binding affinity
   chemName --name [str] --target [str] --polymerType [str]
 		                    search PDBIDs by chemical subcomponent
