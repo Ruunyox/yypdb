@@ -521,7 +521,7 @@ my $get='';
 my $xmlget='';
 if ($molid)
 {
-	print "\n>>> Fetching Molecule Info for ID $keyword...\n";
+	#print "\n>>> Fetching Molecule Info for ID $keyword...\n";
 	$url = join("","$mol_url","$keyword");
 	$get = `wget -q -O - \"$url\"`; 
 	$xmlget = XML::LibXML->load_xml(string => $get);
@@ -530,7 +530,7 @@ if ($molid)
 }
 if ($head)
 {
-	print "\n>>> Fetching PDB Info for ID $keyword...\n";
+	#print "\n>>> Fetching PDB Info for ID $keyword...\n";
 	$url = join("","$pdb_url","$keyword");
 	$get = `wget -q -O - \"$url\"`;
 	$xmlget = XML::LibXML->load_xml(string => $get);
@@ -543,7 +543,7 @@ if ($seq ne '')
 	my $keyword = shift(@seqarr);
 	if($vb)
 	{
-		print "\n>>> Fetching sequence for chain(s) @seqarr...\n\n";
+		#print "\n>>> Fetching sequence for chain(s) @seqarr...\n\n";
 	}
 	foreach my $chain (@seqarr)
 	{
@@ -555,7 +555,7 @@ if ($seq ne '')
 }
 if ($lig)
 {
-	print "\n>>> Fetching ligands...\n\n";
+	#print "\n>>> Fetching ligands...\n\n";
 	$url = join("","$ligand_url","$keyword");
 	$get = `wget -q -O - \"$url\"`;
 	$xmlget = XML::LibXML->load_xml(string => $get);
@@ -566,7 +566,7 @@ if ($go)
 {
 	if($vb)
 	{
-		print "\n>>> Fetching associated gene ontology terms...\n\n";
+	#	print "\n>>> Fetching associated gene ontology terms...\n\n";
 	}
 	$url = join("","$go_url","$keyword");
 	$get = `wget -q -O - \"$url\"`;
@@ -576,7 +576,7 @@ if ($go)
 }
 if ($grab)
 {
-	print "\n>>> Saving PDB $keyword to local directory...\n";
+	#print "\n>>> Saving PDB $keyword to local directory...\n";
 	$url = join("","$grab_url","$keyword",".ent.gz");
 	$get = `wget -q \"$url\"`;
 }
