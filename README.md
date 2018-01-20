@@ -64,11 +64,11 @@ The PDB and and some of the third party resources it may use are for public
 use. Please avoid spamming XML requests or making unduly large requests.
 Continued behaviors such as this will prompt your requests to moved to a
 slower access lane or outright blocked for a temporary time. Please respect the
-use of these generous resources. Enjoy! 
+use of these generous libraries. Enjoy! 
 
 ### Dependencies
 
-* Perl
+* Perl 5
 * wget
 * LibXML
 
