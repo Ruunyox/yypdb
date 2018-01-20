@@ -10,7 +10,7 @@
 ### Features
 
 Search the PDB for molecular, methodological, genomic, chemical,
-strucutral, ontological, and taxonimical information using site-side REST search
+strucutral, ontological, and taxonomical information using site-side REST search
 services and XML query. See usage for instructions (--help).  
 
 ### Usage
