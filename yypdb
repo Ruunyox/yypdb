@@ -18,38 +18,209 @@ our $go_url = "https://www.rcsb.org/pdb/rest/goTerms?structureId=";
 our $blast_url = "https://www.rcsb.org/pdb/rest/getBlastPDB1?sequence=";
 
 sub query_gen {
-	my($keyword,$type) = @_;
-	my $query = qq(
-<?xml version="1.0" encoding="UTF-8"?>
-<orgPdbQuery>
+	my (%arg)  = @_;
+	my $type =       $arg{type}        // '';
+	my $title =      $arg{title}       // '';
+	my $author=      $arg{author}	   // '';
+	my $min    =     $arg{min}		   // '';
+	my $max    =     $arg{max}		   // '';
+	my $protein =    $arg{protein}     // 'N';
+	my $DNA =        $arg{DNA}         // 'N';
+	my $RNA = 	     $arg{RNA}         // 'N';
+	my $hybrid=	     $arg{hybrid}      // 'N';
+	my $assembly=    $arg{assembly}    // '';
+	my $organism=    $arg{organism}    // '';
+	my $motif=       $arg{motif}       // '';
+	my $name=        $arg{name}        // '';
+	my $target=      $arg{target}      // 'Any';
+	my $polymerType= $arg{polymerType} // 'Any';
+
+	our $query='';
+	if ($type eq 'author')
+	{
+		$query = qq(
+	<orgPdbQuery>
 	<version>B0905</version>
-	<queryType>org.pdb.query.simple.${type}</queryType>
-	<description>StructTitleQuery: struct.title.comparator=contains struct.title.value=${keyword}</description>
+	<queryType>org.pdb.query.simple.AdvancedAuthorQuery</queryType>
+	<description>Author query of $author</description>
+	<searchType>All Authors</searchType>
+	<audit_author.name>$author</audit_author.name>
+	<exactMatch>false</exactMatch>
+	</orgPdbQuery>
+	);
+	}
+	if ($type eq 'date')
+	{
+		$query = qq(
+	<orgPdbQuery>
+	<queryType>org.pdb.query.simple.DepositDateQuery</queryType>
+	<pdbx_database_status.recvd_initial_deposition_date.min>$min</pdbx_database_status.recvd_initial_deposition_date.min>
+	<pdbx_database_status.recvd_initial_deposition_date.max>$max</pdbx_database_status.recvd_initial_deposition_date.max>
+	</orgPdbQuery>
+	);
+	}
+	if ($type eq 'releaseDate')
+	{
+		$query = qq(
+	<orgPdbQuery>
+	<queryType>org.pdb.query.simple.ReleaseDateQuery</queryType>
+	<pdbx_audit_revision_history.revision_date.comparator>between</pdbx_audit_revision_history.revision_date.comparator>
+	<pdbx_audit_revision_history.revision_date.min>$min</pdbx_audit_revision_history.revision_date.min>
+	<pdbx_audit_revision_history.revision_date.max>$max</pdbx_audit_revision_history.revision_date.max>
+	<pdbx_audit_revision_history.ordinal.value>1</pdbx_audit_revision_history.ordinal.value>
+	</orgPdbQuery>
+	);
+	}
+	if ($type eq 'revisionDate')
+	{
+		$query = qq(
+	<orgPdbQuery>
+	<queryType>org.pdb.query.simple.ReviseDateQuery</queryType>
+	<pdbx_audit_revision_history.revision_date.comparator>between</pdbx_audit_revision_history.revision_date.comparator>
+	<pdbx_audit_revision_history.revision_date.min>$min</pdbx_audit_revision_history.revision_date.min>
+	<pdbx_audit_revision_history.revision_date.max>$max</pdbx_audit_revision_history.revision_date.max>
+	<pdbx_audit_revision_history.ordinal.value>1</pdbx_audit_revision_history.ordinal.value>
+	</orgPdbQuery>	
+	);
+	}
+	if ($type eq 'macromolecule')
+	{
+		$query = qq(
+	<orgPdbQuery>
+	<queryType>org.pdb.query.simple.ChainTypeQuery</queryType>
+	<description>Chain Type Search : Contains Protein=Y, Contains DNA=Y, Contains RNA=N, Contains DNA/RNA Hybrid=Y</description>
+	<containsProtein>$protein</containsProtein>
+	<containsDna>$DNA</containsDna>
+	<containsRna>$RNA</containsRna>
+	<containsHybrid>$hybrid</containsHybrid>
+	</orgPdbQuery>
+	);
+	}
+	if ($type eq 'chainNum')
+	{
+		if ($assembly eq 'asymmetric')
+		{
+			$query = qq(
+		<orgPdbQuery>
+		<queryType>org.pdb.query.simple.NumberOfChainsQuery</queryType>
+		<description>Number of Chains Search</description>
+		<struct_asym.numChains.min>$min</struct_asym.numChains.min>
+		<struct_asym.numChains.max>$max</struct_asym.numChains.max>
+		</orgPdbQuery>
+		);
+		}
+		if ($assembly eq 'biological')
+		{
+			$query = qq(
+		<orgPdbQuery>
+		<queryType>org.pdb.query.simple.BiolUnitQuery</queryType>
+		<description>Oligomeric state Search : Min Number of oligomeric state=$min Max Number of oligomeric state=$max</description>
+		<oligomeric_statemin>$min</oligomeric_statemin>
+		<oligomeric_statemax>$max</oligomeric_statemax>
+		</orgPdbQuery>
+		);
+		}
+	}
+	if($type eq 'entNum')
+	{
+		$query = qq(
+	<orgPdbQuery>
+	<queryType>org.pdb.query.simple.NumberOfEntitiesQuery</queryType>
+	<description>Number of Entities Search : Entity Type=Protein Min Number of Entities=$min Max Number of Entities=$max</description>
+	<entity.type.>p</entity.type.>
+	<struct_asym.numEntities.min>$min</struct_asym.numEntities.min>
+	<struct_asym.numEntities.max>$max</struct_asym.numEntities.max>
+	</orgPdbQuery>
+	);
+	}
+	if ($type eq 'title')
+	{
+		$query = qq(
+	<orgPdbQuery>
+	<queryType>org.pdb.query.simple.StructTitleQuery</queryType>
+	<description>StructTitleQuery: struct.title.comparator=contains struct.title.value=${title}</description>
 	<struct.title.comparator>contains</struct.title.comparator>
-	<struct.title.value>${keyword}</struct.title.value>
-</orgPdbQuery>
-);
+	<struct.title.value>${title}</struct.title.value>
+	</orgPdbQuery>
+	);
+	}
+	if ($type eq 'binding')
+	{
+		$query = qq(
+	<orgPdbQuery>
+	<queryType>org.pdb.query.simple.BindingAffinityQuery</queryType>
+	<description>Binding Affinity: Binging affinity min is 10 and Binding affinity max is 20 and Affinity Type is Ki</description>
+	<bindingAffinityComparator>between</bindingAffinityComparator>
+	<bingingAffinityMin>$min</bingingAffinityMin>
+	<bindingAffinityMax>$max</bindingAffinityMax>
+	<affinityType>Ki</affinityType>
+	</orgPdbQuery>
+	);
+	}
+	if ($type eq 'organism')
+	{
+		$query = qq(
+	<orgPdbQuery>
+ 	<version>B0905</version>
+ 	<queryType>org.pdb.query.simple.OrganismQuery</queryType>
+ 	<description>Organism Search: Organism Name=$organism</description>
+ 	<organismName>$organism</organismName>
+	</orgPdbQuery>
+	);
+	}
+	if ($type eq 'seqMotif')
+	{
+		$query = qq(
+	<orgPdbQuery>
+	<queryType>org.pdb.query.simple.MotifQuery</queryType>
+	<description>Motif Query For: $motif</description>
+	<motif>$motif</motif>
+	</orgPdbQuery>
+	);
+	}
+	if ($type eq 'chemName')
+	{
+		$query = qq(
+	<orgPdbQuery>
+	<queryType>org.pdb.query.simple.ChemCompNameQuery</queryType>
+	<description>Chemical Name: Name Contains $name and Polymeric type is $polymerType</description>
+	<target>$target</target>
+	<comparator>Contains</comparator>
+	<name>$name</name>
+	<polymericType>$polymerType</polymericType>
+	</orgPdbQuery>
+	);
+	}
 	return $query;
-}
+}	
 
 sub id_to_name {
-	my(@IDlist) = @_;
-	foreach my $ID (@IDlist)
+	my(%arg) = @_;
+	my $IDlist_ref = $arg{IDlist_ref}  // '';
+	my $meta	   = $arg{meta}        // 'title';
+	my $url='';
+	foreach my $ID (@$IDlist_ref)
 	 {
 		print "$ID\t";
-		my $url = join("","$pdb_url","$ID");
+		if (length($ID) eq 4){$url = join("","$pdb_url","$ID");}
+		if (length($ID) eq 3){$url = join("","$chem_url","$ID");}
 		my $get = `wget -q -O - \"$url\"`; 
 		my $xml = XML::LibXML->load_xml(string => $get);
 		foreach my $PDB ($xml->findnodes('//PDB'))
 		{
-			print $PDB->getAttribute('title');
+			if ($meta eq 'title'){print $PDB->getAttribute('title');}
+			if ($meta eq 'author'){print $PDB->getAttribute('citation_authors');}
+		}
+		foreach my $name ($xml->findnodes('//chemicalName'))
+		{
+			print $name->string_value();
 		}
 		print "\n";
 	}	
 }
 
 sub disp_xml {
-	my($xml, $type) = @_;
+	my($xml, $type, $vb) = @_;
 	if ($type eq "molid")
 	{
 		foreach my $polymer ($xml->findnodes('//polymer'))
@@ -85,7 +256,6 @@ sub disp_xml {
 				print "\nFRAGMENT:  ";
 				print $fragment->getAttribute('desc');	
 			}
-		print "\n";
 		}
 	}
 	if ($type eq "head")
@@ -116,10 +286,12 @@ sub disp_xml {
 	{
 		foreach my $seq ($xml->findnodes('//SEQUENCE'))
 		{
-			print "SEQUENCE ";
-			print $seq->getAttribute('id');
+			if($vb)
+			{
+				print "SEQUENCE ";
+				print $seq->getAttribute('id');
+			}
 			print $seq->string_value();
-			print "\n";
 		}
 	}
 	if ($type eq "lig")
@@ -161,119 +333,249 @@ sub disp_xml {
 	}
 }
 
-my $help = '';
-my $molid= '';
-my $head = '';
-my $seq  = '';
-my $idsearch='';
-my $grab = '';
-my $lig  = '';
-my $go   = '';
-GetOptions ('help' => \$help,
-	    'molid' => \$molid,
-	    'head' => \$head,
-	    'seq=s' => \$seq,
-	    'grab' => \$grab,
-	    'lig' => \$lig,
-	    'go' => \$go,
-	    'idsearch=s' => \$idsearch);
+my $help = ''; my $molid = ''; my $head = '';
+my $seq  = ''; my $grab = ''; my $lig  = '';
+my $go   = ''; my $blast = ''; my $search = ''; 
+our $vb='';
+
+# CLI PATTERN
+# --search (type) --opt1 (val) opt2 (val) ...
+my $min=''; my $max='';
+# TITLE --- title
+# ORGANISM --- organism
+# REVISION & RELEASE DATE  --- revisionDate || releaseDate
+# AUTHOR - author
+# MACROMOLECULE --- macromolecule
+my $protein = ''; my $DNA = '';
+my $RNA = ''; my $hybrid = '';
+# CHAIN NUMBER --- chainNum
+my $assembly = '';
+# ENTITY NUMBER --- entNum
+# BINDING --- binding
+# SEQUENCE MOTIF --- seqMotif
+my $motif = '';
+# CHEMICAL COMPONENT --- chemName
+my $name = ''; my $target = ''; my $polymerType = '';
+
+GetOptions ('help'   => \$help,
+	    'molid'      => \$molid,
+	    'head'       => \$head,
+	    'seq=s'      => \$seq,
+	    'grab'       => \$grab,
+	    'lig'        => \$lig,
+	    'go'         => \$go,
+		'blast=s'    => \$blast,
+		'min=s'		 => \$min,
+		'max=s'		 => \$max,
+		'search=s'   => \$search,
+		'protein=s' 	 => \$protein,
+		'DNA=s'		 => \$DNA,
+		'RNA=s' 		 => \$RNA,
+		'hybrid=s'     => \$hybrid,
+		'assembly=s'	 => \$assembly,
+		'motif=s'		 => \$motif,
+		'name=s'	     =>	\$name,
+		'target=s'	 => \$target,
+		'polymerType=s'=> \$polymerType,
+		'vb'		 => \$vb);	
 
 if ($help)
 {
-    print "\n YYPDB \n";
-    print "\n usage: yypdb [opts] [str]\n";
-    print "\n\t--molid [PDBID]         get molecule info";
-    print "\n\t--header [PDBID]        get header info";
-    print "\n\t--seq [PDBID A B C ...] get amino acid sequence for each chain";
-    print "\n\t--lig [PDBID]           get ligand info";
-    print "\n\t--go [PDBID]            get gene ontology info";
-    print "\n\t--grab [PDBID]          save pbd file to local directory";
-    print "\n\t--idsearch [keyword]    search PDBIDs using keyword";
+    print "\nYYPDB \n\n";
+	print "FETCH SERVICES:\n"; 
+    print "usage: yypdb [flags] [str]\n";
+	print "\n  --vb                         verbose mode";
+    print "\n  --molid [PDBID]              get molecule info";
+    print "\n  --header [PDBID]             get header info";
+    print "\n  --seq [PDBID A B C ...]      get amino acid sequence for each chain";
+    print "\n  --lig [PDBID]                get ligand info";
+    print "\n  --go [PDBID]                 get gene associated ontology info";
+    print "\n  --grab [PDBID]               save pbd file to local directory";
     print "\n";
+	print "\nSEARCH SERVICES:\n";
+	print "usage: yypdb [optional verbose] --search [search type] [params]\n\n";
+	print "  --vb                         verbose mode\n";
+	print "  title [str]		       search PDBIDs by title\n";
+	print "  author [str]		       search PDBIDs by citation author\n";
+	print "  organism [str]               search PDBIDs by associated organism\n";
+	print "  seqMotif --motif [str]       search PDBIDs by sequence filter\n";
+	print "  revisionDate [y-m-d] [y-m-d] search PDBIDs by revision dates\n"; 
+	print "  releaseDate [y-m-d] [y-m-d]  search PDBIDs by release dates\n\n";
+	print "  macromolecu:wle --protein [y/n] --DNA [y/n] --RNA [y/n]
+    --hybrid [y/n]             serach PDBIDs by macromolecule type\n\n";
+	print "  chainNum --assembly [asymmetric/biological]
+    --min [min] --max [max]    search PDBIDs by number of chains\n\n";
+	print "  entNum --min [min] --max [max]    search PDBIDs by entity number\n";
+	print "  molWt  --min [min] --max [max]    search PDBIDs by molecular weight\n";
+	print "  binding --min [min] --max[max]    search PDBIDS by ki binding affinity\n";
+	print "  chemName --name [str] --target [str] --polymerType [str]
+		                    search PDBIDs by chemical subcomponent"; 
     exit;
 }
 
 my $keyword = "$ARGV[$#ARGV]";
-my @opts=();
+our $query='';
+our $meta='title';
+if ($search)
+{
+	my $type = $search;
+	if ($type eq 'title') #works
+	{
+		print "\n>>> Searching PDB for $ARGV[$#ARGV]...";
+		$query = query_gen(type => $type, title => $ARGV[$#ARGV]);
+	}
+	if ($type eq 'author') #works
+	{
+		print "\n>>> Searching PDB for author $ARGV[$#ARGV]...";
+		$query = query_gen(type => $type, author => $ARGV[$#ARGV]);
+		$meta = 'author';
+	}
+	if ($type eq 'organism') #works
+	{
+		print "\n>>> Searching PDB by organism $ARGV[$#ARGV]...";
+		$query = query_gen(type => $type, organism => $ARGV[$#ARGV]);
+	}
+	if ($type eq 'revisionDate') #works
+	{
+		print "\n>>> Searching PDB by revision date from $min to $max...";
+		$query = query_gen(type => $type, 
+							min => $min, 
+							max => $max);
+	}	
+	if ($type eq 'releaseDate') #works
+	{
+		print "\n>>> Searching PDB by release date from $min to $max...";
+		$query = query_gen(type => $type, 
+							min => $min, 
+							max => $max);
+	}
+	if ($type eq 'macromolecule') #works
+	{
+		print "\n>>> Searching PDB by macromolecule...";
+		$query = query_gen(type => $type, 
+							protein => $protein, 
+							DNA => $DNA,	
+							RNA => $RNA, 
+							hybrid => $hybrid); 
+	}
+	if ($type eq 'chainNum') #works
+	{
+		print "\n>>> Searching PDB for entries containing $min to $max chains...";
+		$query = query_gen(type => $type, 
+							assembly => $assembly, 
+							min => $min, 
+							max => $max);
+	}
+	if ($type eq 'entNum') #works
+	{
+		print "\n>>> Searching PDB for entries containing $min to $max entities...";
+		$query = query_gen(type => $type,
+							min => $min,
+							max => $max);
+	}
+	if ($type eq 'binding') #works
+	{
+		print "\n>>> Searching PDB for binding affinities between $min and $max...";
+		$query = query_gen(type => $type,
+							min => $min,
+							max => $max);
+	}
+	if ($type eq 'seqMotif') #works
+	{
+		print "\n>>> Searching for PDB entires with seqeucenc motif $motif...";
+		$query = query_gen(type => 'seqMotif',
+							motif => $motif);
+	}
+	if ($type eq 'chemName')
+	{
+		print "\n>>> Searching for PDB entries containing $name...";
+		$query = query_gen(type => $type,
+							name => $name,
+							target => $target,
+							polymerType => $polymerType);
+	}	
+	my $request = HTTP::Request->new( POST => ${rest_search});
+	$request->content_type( 'application/x-www-form-urlencoded' );
+	$request->content( $query );
+	my $response = $ua->request($request);
+	my @entries = split("\n",$response->content);
+	if ( $#entries eq -1 ){print " 0 entries found.";}
+	else
+	{
+		print " @{[$#entries + 1]} entries found.";
+		print "\nDisplaying all results. ^C to abort...";
+		print "\nThis may take a few seconds...\n\n";
+		if($vb)
+		{
+			id_to_name(IDlist_ref => \@entries, meta => $meta) 
+		}
+		else
+		{
+			print "$_\n" for @entries;
+		}
+	}
+}
+my $url='';
+my $get='';
+my $xmlget='';
 if ($molid)
 {
 	print "\n>>> Fetching Molecule Info for ID $keyword...\n";
-	my $url = join("","$mol_url","$keyword");
-	my $get = `wget -q -O - \"$url\"`; 
-	my $xmlget = XML::LibXML->load_xml(string => $get);
-	disp_xml($xmlget,"molid");
+	$url = join("","$mol_url","$keyword");
+	$get = `wget -q -O - \"$url\"`; 
+	$xmlget = XML::LibXML->load_xml(string => $get);
+	disp_xml($xmlget,"molid",$vb);
 	print "\n";
 }
 if ($head)
 {
 	print "\n>>> Fetching PDB Info for ID $keyword...\n";
-	my $url = join("","$pdb_url","$keyword");
-	my $get = `wget -q -O - \"$url\"`;
-	my $xmlget = XML::LibXML->load_xml(string => $get);
-	disp_xml($xmlget,"head");
+	$url = join("","$pdb_url","$keyword");
+	$get = `wget -q -O - \"$url\"`;
+	$xmlget = XML::LibXML->load_xml(string => $get);
+	disp_xml($xmlget,"head",$vb);
 	print "\n";
 }
 if ($seq ne '')
 {
 	my @seqarr = split(" ",$seq);	
 	my $keyword = shift(@seqarr);
-	print "\n>>> Grabbing sequence for chain(s) @seqarr...\n\n";
+	if($vb)
+	{
+		print "\n>>> Fetching sequence for chain(s) @seqarr...\n\n";
+	}
 	foreach my $chain (@seqarr)
 	{
 		my $url = join("","$das_url","$keyword",".","$chain");
 		my $get = `wget -q -O - \"$url\"`;
 		my $xmlget = XML::LibXML->load_xml(string => $get);
-		disp_xml($xmlget,"seq");
+		disp_xml($xmlget,"seq",$vb);
 	}	
-}
-if (grep(/\-\-blast/, @ARGV))
-{
-	my $seq = $keyword;
-	print "\n>>>BLASTing sequence $seq...";
 }
 if ($lig)
 {
 	print "\n>>> Fetching ligands...\n\n";
-	my $url = join("","$ligand_url","$keyword");
-	my $get = `wget -q -O - \"$url\"`;
-	my $xml_get = XML::LibXML->load_xml(string => $get);
-	disp_xml($xml_get,"lig");
+	$url = join("","$ligand_url","$keyword");
+	$get = `wget -q -O - \"$url\"`;
+	$xmlget = XML::LibXML->load_xml(string => $get);
+	disp_xml($xmlget,"lig",$vb);
 	print "\n"; 
 }
 if ($go)
 {
-	print "\n>>> Fetching associated gene ontology terms...\n\n";
-	my $url = join("","$go_url","$keyword");
-	my $get = `wget -q -O - \"$url\"`;
-	my $xml_get = XML::LibXML->load_xml(string => $get);
-	disp_xml($xml_get,"go");
+	if($vb)
+	{
+		print "\n>>> Fetching associated gene ontology terms...\n\n";
+	}
+	$url = join("","$go_url","$keyword");
+	$get = `wget -q -O - \"$url\"`;
+	$xmlget = XML::LibXML->load_xml(string => $get);
+	disp_xml($xmlget,"go",$vb);
 	print "\n"; 
 }
 if ($grab)
 {
 	print "\n>>> Saving PDB $keyword to local directory...\n";
-	my $url = join("","$grab_url","$keyword",".ent.gz");
-	my $get = `wget -q \"$url\"`;
-}
-if ($idsearch ne '') 
-{
-	print "\nSearching PDBIDs for $idsearch...";
-	my $query = query_gen(${idsearch},"StructTitleQuery"); 
-	my $request = HTTP::Request->new( POST => ${rest_search});
-	$request->content_type( 'application/x-www-form-urlencoded' );
-	$request->content( $query );
-	my $response = $ua->request($request);
-	my @entries = split("\n",$response->content);
-	if ( $#entries eq -1 )
-	{
-		print " 0 entries found.";
-	}
-	else 	
-	{
-		print " @{[$#entries + 1]} entries found.";
-		print "\nDisplaying all results. ^C to abort...";
-		print "\nThis may take a few seconds...\n\n";
-		id_to_name(@entries);
-	}
-	print "\n";
+	$url = join("","$grab_url","$keyword",".ent.gz");
+	$get = `wget -q \"$url\"`;
 }
