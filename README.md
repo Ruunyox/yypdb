@@ -13,11 +13,6 @@ Search the PDB for molecular, methodological, genomic, chemical,
 strucutral, ontological, and taxonimical information using site-side REST search
 services and XML query. See usage for instructions (--help).  
 
-Why Perl? I like Perl. And first/foremost this is meant to a commandline tool. Whether it is used
-to simply retrieve information from the PDB without leaving the terminal,
-log information to file, or it plays a role in a chain of UNIX tools or
-scripts, I hope that it finds some use.
-
 ### Usage
 ```
 YYPDB
@@ -59,6 +54,11 @@ usage: yypdb [optional verbose] --search [search type] [params]
 		                    search PDBIDs by chemical subcomponent
 ```
 ### Aside (Please Read)
+
+Why Perl? I like Perl. And first/foremost this is meant to a commandline tool. Whether it is used
+to simply retrieve information from the PDB without leaving the terminal,
+log information to file, or it plays a role in a chain of UNIX tools or
+scripts, I hope that it finds some use.
 
 The PDB and and some of the third party resources it may use are for public
 use. Please avoid spamming XML requests or making unduly large requests.
