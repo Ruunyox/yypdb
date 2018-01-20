@@ -41,8 +41,10 @@ usage: yypdb [optional verbose] --search [search type] [params]
   author [str]		       search PDBIDs by citation author
   organism [str]               search PDBIDs by associated organism
   seqMotif --motif [str]       search PDBIDs by sequence filter
-  revisionDate [y-m-d] [y-m-d] search PDBIDs by revision dates
-  releaseDate [y-m-d] [y-m-d]  search PDBIDs by release dates
+  revisionDate --min [y-m-d] --max [y-m-d]
+			       search PDBIDs by revision dates
+  releaseDate --min [y-m-d] --max [y-m-d]
+			       search PDBIDs by release dates
 
   macromolecu:wle --protein [y/n] --DNA [y/n] --RNA [y/n]
     --hybrid [y/n]             serach PDBIDs by macromolecule type
@@ -61,7 +63,7 @@ usage: yypdb [optional verbose] --search [search type] [params]
 The PDB and and some of the third party resources it may use are for public
 use. Please avoid spamming XML requests or making unduly large requests.
 Continued behaviors such as this will prompt your requests to moved to a
-slower access lane or outright blocked for a temporary time. Plese respect the
+slower access lane or outright blocked for a temporary time. Please respect the
 use of these generous resources. Enjoy! 
 
 ### Dependencies

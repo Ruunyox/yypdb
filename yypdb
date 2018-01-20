@@ -399,8 +399,10 @@ if ($help)
 	print "  author [str]		       search PDBIDs by citation author\n";
 	print "  organism [str]               search PDBIDs by associated organism\n";
 	print "  seqMotif --motif [str]       search PDBIDs by sequence filter\n";
-	print "  revisionDate [y-m-d] [y-m-d] search PDBIDs by revision dates\n"; 
-	print "  releaseDate [y-m-d] [y-m-d]  search PDBIDs by release dates\n\n";
+	print "  revisionDate --min [y-m-d] --max [y-m-d] 
+			       search PDBIDs by revision dates\n"; 
+	print "  releaseDate --min [y-m-d] --max [y-m-d]  
+			       search PDBIDs by release dates\n\n";
 	print "  macromolecu:wle --protein [y/n] --DNA [y/n] --RNA [y/n]
     --hybrid [y/n]             serach PDBIDs by macromolecule type\n\n";
 	print "  chainNum --assembly [asymmetric/biological]
