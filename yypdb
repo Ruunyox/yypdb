@@ -453,7 +453,7 @@ if($clr)
 	our %polar = ('S' => 1, 'T' => 1,
 		'C' => 1, 'M' => 1, 'N' => 1,
 		'Q' => 1);
-	our %pos = ( 'L' => 1, 'R' => 1, 
+	our %pos = ( 'K' => 1, 'R' => 1, 
 		'H' => 1);
 	our %neg = ('D' => 1, 'E' => 1);
 	our %aromatic = ('F' => 1, 
