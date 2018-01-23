@@ -20,37 +20,39 @@ YYPDB
 FETCH SERVICES:
 usage: yypdb [flags] [str]
 
-  --vb                         verbose mode
-  --molid [PDBID]              get molecule info
-  --header [PDBID]             get header info
-  --seq [PDBID.A.B.C ...]      get amino acid sequence for each chain
-  --lig [PDBID]                get ligand info
-  --go [PDBID]                 get gene associated ontology info
-  --grab [PDBID]               save pbd file to local directory
+  --vb                                    verbose mode
+  --molid [PDBID]                         get molecule info
+  --header [PDBID]                        get header info
+  --seq [PDBID.A.B.C ...] --clr --hi      get amino acid sequence for each chain;
+                                          use colors based on amino acid type;
+                                          highlight (nonpolar,polar,positive,negative,aromatic)
+  --lig [PDBID]                           get ligand info
+  --go [PDBID]                            get gene associated ontology info
+  --grab [PDBID]                          save pbd file to local directory
 
 SEARCH SERVICES:
 usage: yypdb [optional verbose] --search [search type] [params]
 
-  --vb                         verbose mode
-  title [str]		       search PDBIDs by title
-  author [str]		       search PDBIDs by citation author
-  organism [str]               search PDBIDs by associated organism
-  seqMotif --motif [str]       search PDBIDs by sequence filter
+  --vb                                    verbose mode
+  title [str]		                  search PDBIDs by title
+  author [str]		                  search PDBIDs by citation author
+  organism [str]                          search PDBIDs by associated organism
+  seqMotif --motif [str]                  search PDBIDs by sequence filter
   revisionDate --min [y-m-d] --max [y-m-d]
-			       search PDBIDs by revision dates
+			                  search PDBIDs by revision dates
   releaseDate --min [y-m-d] --max [y-m-d]
-			       search PDBIDs by release dates
+			                  search PDBIDs by release dates
 
   macromolecu:wle --protein [y/n] --DNA [y/n] --RNA [y/n]
-    --hybrid [y/n]             serach PDBIDs by macromolecule type
+    --hybrid [y/n]                        serach PDBIDs by macromolecule type
 
   chainNum --assembly [asymmetric/biological]
-    --min [min] --max [max]    search PDBIDs by number of chains
+    --min [min] --max [max]               search PDBIDs by number of chains
 
-  entNum --min [min] --max [max]    search PDBIDs by entity number
-  binding --min [min] --max[max]    search PDBIDS by ki binding affinity
+  entNum --min [min] --max [max]          search PDBIDs by entity number
+  binding --min [min] --max[max]          search PDBIDS by ki binding affinity
   chemName --name [str] --target [str] --polymerType [str]
-		                    search PDBIDs by chemical subcomponent
+		                          search PDBIDs by chemical subcomponent
 ```
 ### Aside (Please Read)
 
