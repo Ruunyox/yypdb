@@ -589,6 +589,10 @@ if ($search)
 	if ($type eq 'seqMotif') #works
 	{
 		print "\n>>> Searching for PDB entires with seqeucenc motif $motif...";
+		if (grep(/'.'/,$motif))
+		{
+				
+		}
 		$query = query_gen(type => 'seqMotif',
 							motif => $motif);
 	}
@@ -644,12 +648,9 @@ if ($head)
 }
 if ($seq ne '')
 {
+	$seq =~tr/a-z/A-Z/;
 	my @seqarr = split /\./, "$seq";	
 	my $keyword = shift(@seqarr);
-	if($vb)
-	{
-		#print "\n>>> Fetching sequence for chain(s) @seqarr...\n\n";
-	}
 	foreach my $chain (@seqarr)
 	{
 		my $url = join("","$das_url","$keyword",".","$chain");
