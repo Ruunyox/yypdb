@@ -489,7 +489,7 @@ if ($help)
     print "usage: yypdb [flags] [str]\n";
 	print "\n  --vb                                    verbose mode";
     print "\n  --molid [PDBID]                         get molecule info";
-    print "\n  --header [PDBID]                        get header info";
+    print "\n  --head   [PDBID]                        get header info";
     print "\n  --seq [PDBID.A.B.C ...] --clr --hi      get amino acid sequence for each chain;
                                           use colors based on amino acid type; 
                                           highlight (nonpolar,polar,positive,negative,aromatic)";

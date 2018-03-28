@@ -22,7 +22,7 @@ usage: yypdb [flags] [str]
 
   --vb                                    verbose mode
   --molid [PDBID]                         get molecule info
-  --header [PDBID]                        get header info
+  --head   [PDBID]                        get header info
   --seq [PDBID.A.B.C ...] --clr --hi      get amino acid sequence for each chain;
                                           use colors based on amino acid type;
                                           highlight (nonpolar,polar,positive,negative,aromatic)
